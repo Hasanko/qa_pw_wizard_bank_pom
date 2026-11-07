@@ -1,6 +1,13 @@
-import { test } from '@playwright/test';
+import { expect, test } from '@playwright/test';
 import { faker } from '@faker-js/faker';
+import { BankManagerMainPage } from '../../../src/pages/manager/BankManagerMainPage';
+import { CustomersListPage } from '../../../src/pages/manager/CustomersListPage';
 
+
+  let firstName = faker.person.firstName();
+  let lastName = faker.person.lastName();
+  let postCode = faker.location.zipCode();
+  
 test.beforeEach(async ({ page }) => {
   /* 
   Pre-conditons:
@@ -10,6 +17,15 @@ test.beforeEach(async ({ page }) => {
   4. Fill the Postal Code.
   5. Click [Add Customer].
   */
+
+  const bankManagerMainPage = new BankManagerMainPage(page);
+  await bankManagerMainPage.open();
+
+  await bankManagerMainPage.openAddCustomerBtn();
+  await bankManagerMainPage.addCustomerPage.fillFirstNameField(firstName);
+  await bankManagerMainPage.addCustomerPage.fillLastNameField(lastName);
+  await bankManagerMainPage.addCustomerPage.fillPostCodeField(postCode);
+  await bankManagerMainPage.addCustomerPage.addCustomerButton();
 });
 
 test('Assert manager can delete customer', async ({ page }) => {
@@ -21,4 +37,23 @@ test('Assert manager can delete customer', async ({ page }) => {
   4. Reload the page.
   5. Assert customer row is not present in the table. 
   */
+
+  const customerListPage = new CustomersListPage(page);
+
+  await customerListPage.open();
+
+  const lastRow = customerListPage.getLastRowFromTable();
+  const lastRowCells = lastRow.getByRole('cell');
+
+  await lastRowCells.nth(4).getByRole('button', {name : 'Delete'}).click()
+
+  const deletedRow = page.locator('table tbody tr')
+  .filter({ hasText: firstName })
+  .filter({ hasText: lastName })
+  .filter({ hasText: postCode });
+
+  await expect(deletedRow).toHaveCount(0);
+  await page.reload();
+  await expect(deletedRow).toHaveCount(0);
+  
 });

@@ -9,7 +9,7 @@ export class CustomersListPage {
     await this.page.goto('/angularJs-protractor/BankingProject/#/manager/list');
   }
 
-  async getLastRowFromTable () {
-    await this.page.locator('table tbody tr').last()
+  getLastRowFromTable () {
+    return this.page.locator('table tbody tr').last()
   }
 }
