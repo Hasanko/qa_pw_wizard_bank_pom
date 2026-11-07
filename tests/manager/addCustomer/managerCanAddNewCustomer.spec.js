@@ -1,5 +1,6 @@
-import { test } from '@playwright/test';
+import { expect, test } from '@playwright/test';
 import { faker } from '@faker-js/faker';
+import { BankManagerMainPage } from '../../../src/pages/manager/BankManagerMainPage';
 
 test('Assert manager can add new customer', async ({ page }) => {
   /* 
@@ -26,4 +27,27 @@ test('Assert manager can add new customer', async ({ page }) => {
   2. Do not rely on the customer row id for the steps 8-11. 
     Use the ".last()" locator to get the last row.
   */
+
+    const bankManagerMainPage = new BankManagerMainPage(page);
+
+    const firstName = faker.person.firstName();
+    const lastName = faker.person.lastName();
+    const postCode = faker.location.zipCode();
+
+    await bankManagerMainPage.open();
+    await bankManagerMainPage.openAddCustomerBtn();
+    await bankManagerMainPage.addCustomerPage.fillFirstNameField(firstName);
+    await bankManagerMainPage.addCustomerPage.fillLastNameField(lastName);
+    await bankManagerMainPage.addCustomerPage.fillPostCodeField(postCode);
+    await bankManagerMainPage.addCustomerPage.addCustomerButton();
+    await page.reload();
+    await bankManagerMainPage.openCustomersListBtn(); 
+
+    const lastRow = page.locator('table tbody tr').last();
+    const lastRowCells = lastRow.getByRole('cell');
+
+    await expect(lastRowCells.nth(0)).toHaveText(firstName);
+    await expect(lastRowCells.nth(1)).toHaveText(lastName);
+    await expect(lastRowCells.nth(2)).toHaveText(postCode);
+    await expect(lastRowCells.nth(3)).toHaveText('');
 });
