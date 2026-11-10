@@ -1,5 +1,5 @@
-import { test } from '@playwright/test';
-import { faker } from '@faker-js/faker';
+import { expect, test } from '@playwright/test';
+import { BankManagerMainPage } from '../../../src/pages/manager/BankManagerMainPage';
 
 test('Assert manager can choose currencies for account', async ({ page }) => {
   /* 
@@ -13,4 +13,14 @@ test('Assert manager can choose currencies for account', async ({ page }) => {
   6. Select currency Rupee
   7. Assert the drop-dwon has value Rupee
   */
+
+  const bankManagerMainPage = new BankManagerMainPage(page);
+
+  await bankManagerMainPage.open();
+  await bankManagerMainPage.openOpenAccountBtn();
+
+  for (const currency of ['Dollar', 'Pound', 'Rupee']) {
+    await bankManagerMainPage.openAccountPage.selectCurrency(currency);
+    await expect(bankManagerMainPage.openAccountPage.currencySelect).toHaveValue(currency);
+  }
 });

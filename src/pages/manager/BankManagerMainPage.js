@@ -1,12 +1,13 @@
-import { expect } from '@playwright/test';
 import { AddCustomerPage } from '../../../src/pages/manager/AddCustomerPage';
 import { CustomersListPage } from '../../../src/pages/manager/CustomersListPage';
+import { OpenAccountPage } from '../../../src/pages/manager/OpenAccountPage';
 
 export class BankManagerMainPage {
   constructor(page) {
     this.page = page;
     this.addCustomerPage = new AddCustomerPage(page);
     this.customerListPage = new CustomersListPage(page);
+    this.openAccountPage = new OpenAccountPage(page);
   }
 
   async open() {
